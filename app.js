@@ -1085,12 +1085,20 @@ function buildPool() {
   return pool;
 }
 
+const DISPLAY_LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");
+
 function prepareQuestionForRun(question) {
+  const shuffledOptions = shuffle(question.options).map((option, index) => {
+    const originalLetter = option[3] || option[0];
+    return [DISPLAY_LETTERS[index], option[1], option[2], originalLetter];
+  });
+
   return {
     ...question,
     // Kolejność wariantów jest losowana raz przy starcie testu.
-    // Potem pozostaje stabilna podczas przechodzenia między pytaniami i sprawdzania.
-    options: shuffle(question.options)
+    // Widoczne oznaczenia są potem nadawane od góry: a, b, c, d...
+    // Oryginalna litera z bazy zostaje zachowana technicznie jako czwarty element tablicy.
+    options: shuffledOptions
   };
 }
 
@@ -1146,7 +1154,8 @@ function renderQuiz() {
     ${answer.correct ? "Poprawnie." : "Błędnie."} Twoje zaznaczenia: <b>${escapeHtml(selectedInfo)}</b>.
   </div>` : "";
 
-  const answerBlock = answer.checked ? `<div class="answer"><b>Odpowiedź:</b> ${escapeHtml(q.answer)}</div>` : "";
+  const correctNow = correct.length ? correct.map(l => l.toUpperCase()).join(", ") : "brak";
+  const answerBlock = answer.checked ? `<div class="answer"><b>Poprawne odpowiedzi w tym losowaniu:</b> ${escapeHtml(correctNow)}.<br><b>Komentarz:</b> ${escapeHtml(q.answer)}<p class="mini-note">Litery w komentarzu mogą pochodzić z pierwotnego układu z PDF. W quizie wiążące są litery pokazane aktualnie przy odpowiedziach.</p></div>` : "";
   const noteBlock = answer.checked && q.note ? `<div class="note"><strong>Uwaga:</strong> ${escapeHtml(q.note)}</div>` : "";
   const neutralInfo = neutral.length ? `<p class="mini-note">Warianty niejednoznaczne: ${neutral.map(l => l.toUpperCase()).join(", ")} — pokazują się po sprawdzeniu, ale nie liczą się do wyniku.</p>` : "";
 
