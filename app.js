@@ -1085,8 +1085,17 @@ function buildPool() {
   return pool;
 }
 
+function prepareQuestionForRun(question) {
+  return {
+    ...question,
+    // Kolejność wariantów jest losowana raz przy starcie testu.
+    // Potem pozostaje stabilna podczas przechodzenia między pytaniami i sprawdzania.
+    options: shuffle(question.options)
+  };
+}
+
 function startQuiz(scroll = true, customList = null) {
-  state.list = customList || buildPool();
+  state.list = (customList || buildPool()).map(prepareQuestionForRun);
   state.current = 0;
   state.answers = new Map();
   state.summaryVisible = false;
