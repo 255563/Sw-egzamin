@@ -1126,8 +1126,8 @@ function renderQuiz() {
   const instruction = correct.length === 0
     ? "W tym pytaniu może nie być żadnej poprawnej odpowiedzi."
     : correct.length === 1
-      ? "Zaznacz jedną odpowiedź."
-      : `Zaznacz ${correct.length} odpowiedzi.`;
+      ? ""
+      : ``;
 
   const options = q.options.map(option => {
     const [letter, text, status] = option;
